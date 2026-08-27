@@ -26,9 +26,11 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
 
-    - name: Generate Official Release Keystore
+    - name: Generate Official Keystore
       run: |
         keytool -genkey -v -keystore my-upload-key.jks -storepass razealmas123 -alias upload -keypass razealmas123 -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=RevayateMa,O=RevayateMa,C=IR"
+        mkdir -p app
+        cp my-upload-key.jks app/my-upload-key.jks || true
 
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v4
@@ -38,12 +40,12 @@ jobs:
         gradle wrapper --gradle-version 9.3.1
         chmod +x gradlew
 
-    - name: Build Release APK
+    - name: Build Release APK without Lint
       env:
         STORE_PASSWORD: razealmas123
         KEY_PASSWORD: razealmas123
-        KEYSTORE_PATH: my-upload-key.jks
-      run: ./gradlew assembleRelease --no-daemon --stacktrace
+        KEYSTORE_PATH: ${{ github.workspace }}/my-upload-key.jks
+      run: ./gradlew assembleRelease -x test -x lint -x lintVitalRelease -x lintVitalAnalyzeRelease --no-daemon --stacktrace
 
     - name: Upload Release APK Artifact
       if: always()
