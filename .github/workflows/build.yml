@@ -20,6 +20,14 @@ jobs:
         touch .env
         ls -la
 
+    - name: 👉 FIND PACKAGE NAME 👈
+      run: |
+        echo "========================================"
+        echo "YOUR APPLICATION PACKAGE NAME IS:"
+        grep -rn "applicationId" . || true
+        grep -rn "namespace" . || true
+        echo "========================================"
+
     - name: Set up JDK 21
       uses: actions/setup-java@v4
       with:
